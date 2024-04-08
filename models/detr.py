@@ -20,7 +20,6 @@ from .segmentation import ( #DETRsegm, PostProcessPanoptic, PostProcessSegm,
                            dice_loss, sigmoid_focal_loss)
 from .transformer import build_transformer
 
-
 class DETR(nn.Module):
     """ This is the CryoTransformer module that performs object detection """
     def __init__(self, backbone, transformer, num_classes, num_queries, aux_loss=False):
@@ -45,7 +44,7 @@ class DETR(nn.Module):
         self.aux_loss = aux_loss
 
     def forward(self, samples: NestedTensor):
-        """ The forward expects a NestedTensor, which consists of:
+        """ The forward expects a NestedTensor, which consists of:
                - samples.tensor: batched images, of shape [batch_size x 3 x H x W]
                - samples.mask: a binary mask of shape [batch_size x H x W], containing 1 on padded pixels
 

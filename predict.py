@@ -184,7 +184,7 @@ def get_args_parser():
     parser.add_argument('--remove_difficult', action='store_true')
 
 
-    parser.add_argument('--device', default='cuda:0',
+    parser.add_argument('--device', default='cpu',
                         help='device to use for training / testing')
     parser.add_argument('--thresh', default=0, type=float)   #edits by Ashwin, initially 0.5
 
@@ -334,8 +334,9 @@ def save_individual_box_file(boxes, scores, img_file, h, box_file_path, out_imgn
         )
         boxwriter.writerow(["Micrograph_Name    X_Coordinate    Y_Coordinate    Class_Number    AnglePsi    Confidence_Score"])
 
+
         for i, box in enumerate(boxes):
-            star_bbox = box.cpu().data.numpy()
+            star_bbox = np.asarray(box.data)
             star_bbox = star_bbox.astype(np.int32)
             #h- is done to handle the cryoSparc micrograph reading orientation
             boxwriter.writerow([os.path.basename(img_file)[:-4] + '.mrc', (star_bbox[0] + star_bbox[2]) / 2, h-(star_bbox[1] + star_bbox[3]) / 2, -9999, -9999, scores[i]])
@@ -350,7 +351,7 @@ def plot_predicted_boxes(rgb_image, boxes, filename, predicted_particles_visuali
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
     for idx, box in enumerate(boxes):
-        bbox = box.cpu().data.numpy()
+        bbox = np.asarray(box.data)
         bbox = bbox.astype(np.int32)
         bbox_d = bbox.astype(np.int32)
         bbox_circle = bbox.astype(np.int32)
@@ -437,7 +438,7 @@ if __name__ == "__main__":
 
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-    device = torch.device(args.device)
+    device = torch.device("cpu" if args.device == "cpu" else args.device)
 
     model, _, postprocessors = build_model(args)
     if args.resume:
